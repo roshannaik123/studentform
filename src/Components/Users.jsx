@@ -8,7 +8,8 @@ const Users = () => {
   });
 
   const [name, setName] = useState("");
-  const [course, setCourse] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,16 +22,23 @@ const Users = () => {
   }, []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem("students", JSON.stringify(students));
-    } catch (error) {
-      console.log(error);
-    }
+    localStorage.setItem("students", JSON.stringify(students));
   }, [students]);
 
   const addOrUpdateStudent = () => {
-    if (!name.trim() || !course.trim()) {
+    if (!name.trim() || !email.trim() || !age.trim()) {
       alert("Please fill all details");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email");
+      return;
+    }
+
+    if (Number(age) <= 0) {
+      alert("Please enter a valid age");
       return;
     }
 
@@ -39,7 +47,7 @@ const Users = () => {
     setTimeout(() => {
       if (editId !== null) {
         const updated = students.map((student) =>
-          student.id === editId ? { ...student, name, course } : student
+          student.id === editId ? { ...student, name, email, age } : student
         );
         setStudents(updated);
         setEditId(null);
@@ -47,24 +55,30 @@ const Users = () => {
         const newStudent = {
           id: Date.now(),
           name,
-          course,
+          email,
+          age,
         };
         setStudents([...students, newStudent]);
       }
 
       setName("");
-      setCourse("");
+      setEmail("");
+      setAge("");
       setLoading(false);
     }, 500);
   };
 
   const editStudent = (student) => {
     setName(student.name);
-    setCourse(student.course);
+    setEmail(student.email);
+    setAge(student.age);
     setEditId(student.id);
   };
 
   const deleteStudent = (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this student?");
+    if (!confirmDelete) return;
+
     setLoading(true);
 
     setTimeout(() => {
@@ -87,27 +101,35 @@ const Users = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center py-10">
-      <div className="w-full max-w-3xl bg-white shadow-lg rounded-xl p-6">
+    <div className="min-h-screen bg-gray-100 flex justify-center py-10 px-4">
+      <div className="w-full max-w-5xl bg-white shadow-lg rounded-xl p-6">
         <h2 className="text-2xl font-bold text-center text-red-600 mb-6">
           Student Manager
         </h2>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <input
             type="text"
             placeholder="Student Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="flex-1 border px-4 py-2 rounded-md"
+            className="border px-4 py-2 rounded-md"
           />
 
           <input
-            type="text"
-            placeholder="Course"
-            value={course}
-            onChange={(e) => setCourse(e.target.value)}
-            className="flex-1 border px-4 py-2 rounded-md"
+            type="email"
+            placeholder="Student Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border px-4 py-2 rounded-md"
+          />
+
+          <input
+            type="number"
+            placeholder="Student Age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            className="border px-4 py-2 rounded-md"
           />
 
           <button
@@ -126,43 +148,51 @@ const Users = () => {
         </div>
 
         {loading ? (
-          <div className="text-center py-10">
-            <p className="text-lg font-semibold text-gray-600">Loading...</p>
+          <div className="text-center py-10 text-lg font-semibold text-gray-600">
+            Loading...
           </div>
         ) : students.length === 0 ? (
           <div className="text-center py-10 text-gray-500">
             No students found
           </div>
         ) : (
-          <ul className="space-y-4">
-            {students.map((student) => (
-              <li
-                key={student.id}
-                className="flex justify-between items-center bg-gray-100 p-4 rounded-lg"
-              >
-                <div>
-                  <p className="font-semibold">{student.name}</p>
-                  <p className="text-sm text-gray-500">{student.course}</p>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => editStudent(student)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => deleteStudent(student.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-200">
+              <thead>
+                <tr className="bg-gray-100 text-left">
+                  <th className="border border-gray-200 px-4 py-3">Name</th>
+                  <th className="border border-gray-200 px-4 py-3">Email</th>
+                  <th className="border border-gray-200 px-4 py-3">Age</th>
+                  <th className="border border-gray-200 px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-50">
+                    <td className="border border-gray-200 px-4 py-3">{student.name}</td>
+                    <td className="border border-gray-200 px-4 py-3">{student.email}</td>
+                    <td className="border border-gray-200 px-4 py-3">{student.age}</td>
+                    <td className="border border-gray-200 px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => editStudent(student)}
+                          className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteStudent(student.id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
