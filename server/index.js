@@ -6,6 +6,7 @@ import { register } from "./Controller/auth/registerController.js";
 import { login } from "./Controller/auth/loginController.js";
 import { logout } from "./Controller/auth/logoutController.js";
 import { createTask, deleteTask, getTasks, updateTask } from "./Controller/TaskController.js";
+import { getUserById } from "./Controller/UserController.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get("/api/health", (_req, res) => {
 app.post("/api/register", register);
 app.post("/api/login", login);
 app.post("/api/logout", logout);
+app.get("/api/users/:id", getUserById);
 
 app.post("/api/tasks", createTask);
 app.get("/api/tasks", getTasks);

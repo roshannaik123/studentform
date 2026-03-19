@@ -33,6 +33,7 @@ const navigate=useNavigate();
       if (isLogin) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("email",user.email);
+        localStorage.setItem("userId", data.user.id);
         // console.log("Logged in user:", data.user);
         alert("Login successful!");
         navigate("/dashboard")
