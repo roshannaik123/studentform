@@ -2,16 +2,32 @@ import Task from "../model/Task.js";
 
 export const createTask = async (req, res) => {
   try {
-    const task = await Task.create(req.body);
+    const { userId, ...taskData } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User id is required" });
+    }
+
+    const task = await Task.create({
+      ...taskData,
+      userId,
+    });
+
     res.status(201).json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getTasks = async (_req, res) => {
+export const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User id is required" });
+    }
+
+    const tasks = await Task.find({ userId }).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -32,7 +48,6 @@ export const deleteTask = async (req, res) => {
   }
 };
 
-// passing User_.id to change 
 export const updateTask = async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {

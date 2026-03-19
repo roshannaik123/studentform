@@ -6,7 +6,13 @@ export const fetchTasks = createAsyncThunk(
   "tasks/fetchTasks",
   async (_, thunkAPI) => {
     try {
-      const res = await fetch(API_URL);
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        throw new Error("User id not found");
+      }
+
+      const res = await fetch(`${API_URL}?userId=${userId}`);
 
       if (!res.ok) throw new Error("Failed to fetch tasks");
 
@@ -22,12 +28,21 @@ export const addTask = createAsyncThunk(
   "tasks/addTask",
   async (taskData, thunkAPI) => {
     try {
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        throw new Error("User id not found");
+      }
+
       const res = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(taskData),
+        body: JSON.stringify({
+          ...taskData,
+          userId,
+        }),
       });
 
       if (!res.ok) throw new Error("Failed to add task");
