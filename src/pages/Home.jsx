@@ -1,7 +1,7 @@
 import React from "react";
 import SideBar from "../Components/sidebar/SideBar";
-import TaskList from "../Components/mainbar/TaskList";
 import Navbar from "../Components/Navbar";
+import TaskList from "../Components/TaskList";
 
 const Home = () => {
   return (

@@ -4,8 +4,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const [islogin, setLogin] = useState(false);
   const navigate = useNavigate();
-
-
   const handleLog = () => {
     navigate("/");
   };
@@ -27,9 +25,6 @@ const Navbar = () => {
           <p className="text-sm">Welcome back!</p>
         </div>
       </div>
-
-   
-
       {/* Login / Logout */}
       {/* <div>
         {islogin ? (

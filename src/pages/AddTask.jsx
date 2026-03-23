@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addTask } from "../features/TaskSlice";
+import { toast } from "react-toastify";
 
 const AddTask = ({ onClose }) => {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const AddTask = ({ onClose }) => {
     e.preventDefault();
 
     if (!task.name.trim()) {
-      alert("Task name is required");
+      toast.error("Task name is required");
       return;
     }
 
@@ -36,11 +37,11 @@ const AddTask = ({ onClose }) => {
         })
       ).unwrap();
 
-      alert("Task created successfully");
+      toast.success("Task created successfully");
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-      alert(error || "Failed to create task");
+      toast.error(error || "Failed to create task");
     } finally {
       setIsSubmitting(false);
     }

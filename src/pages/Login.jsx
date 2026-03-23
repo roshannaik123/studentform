@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [isLogin, setLogin] = useState(true);
@@ -12,7 +13,7 @@ const navigate=useNavigate();
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!isLogin && user.password !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
     try {
@@ -27,7 +28,7 @@ const navigate=useNavigate();
       });
       const data = await response.json();
       if (!response.ok) {
-        alert(data.message || "Error occurred");
+        toast.error(data.message || "Error occurred");
         return;
       }
       if (isLogin) {
@@ -35,18 +36,18 @@ const navigate=useNavigate();
         localStorage.setItem("email",user.email);
         localStorage.setItem("userId", data.user.id);
         // console.log("Logged in user:", data.user);
-        alert("Login successful!");
+        toast.success("Login successful!");
         navigate("/dashboard")
       } else {
         console.log("Registered user:", data.user);
-        alert("Registration successful! Please login.");
+        toast.success("Registration successful! Please login.");
         setLogin(true); 
       }
       
       setUser({email:"",password:""})
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong. Try again.");
+      toast.error("Something went wrong. Try again.");
     }
   };
 
